@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#4a7c59">
+<meta name="description" content="匿名树洞——想说点什么？这里没人知道你是谁。本站不采集 IP、位置或设备指纹。">
+<title>匿名树洞 · 想说就说</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌳</text></svg>">
+<style>
+  :root{
+    --bg1:#f7f4ee; --bg2:#eef3ef;
+    --card:#ffffff; --card2:#fbfaf7;
+    --text:#33302b; --text2:#8a857a;
+    --accent:#4a7c59; --accent2:#6fae8b;
+    --line:#ece8df; --soft:rgba(74,124,89,.12);
+    --shadow:0 6px 24px rgba(60,50,30,.08);
+    --shadow-lg:0 12px 40px rgba(60,50,30,.14);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg1:#131619; --bg2:#161b21;
+      --card:#1e242c; --card2:#252c35;
+      --text:#e8e6e1; --text2:#99a0a8;
+      --accent:#7ec8a0; --accent2:#a5dcbe;
+      --line:#2b333d; --soft:rgba(126,200,160,.14);
+      --shadow:0 6px 24px rgba(0,0,0,.35);
+      --shadow-lg:0 12px 40px rgba(0,0,0,.5);
+    }
+  }
+  /* ---------- 洋葱模式主题 ---------- */
+  body.tor{
+    --bg1:#1a1220; --bg2:#221830;
+    --card:#251c30; --card2:#2e2438;
+    --text:#e9e2f0; --text2:#a79bb8;
+    --accent:#b58fe8; --accent2:#d0b3f5;
+    --line:#3a2e4a; --soft:rgba(181,143,232,.16);
+    --shadow:0 6px 24px rgba(0,0,0,.4);
+    --shadow-lg:0 12px 40px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    background:linear-gradient(180deg,var(--bg1),var(--bg2)) fixed;
+    color:var(--text);
+    min-height:100vh;
+    line-height:1.65;
+    transition:background .4s;
+  }
+  .wrap{max-width:640px; margin:0 auto; padding:0 18px 60px;}
+
+  /* ---------- 头部 ---------- */
+  header{text-align:center; padding:44px 0 6px;}
+  .logo{font-size:44px; line-height:1; animation:sway 4s ease-in-out infinite; display:inline-block;}
+  @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+  h1{
+    font-family:Georgia,"Songti SC","STSong","Noto Serif SC",serif;
+    font-size:clamp(28px,7vw,36px);
+    letter-spacing:.14em; margin-top:10px; font-weight:700;
+  }
+  .subtitle{color:var(--text2); font-size:14px; margin-top:6px; letter-spacing:.06em;}
+  .status-row{display:flex; justify-content:center; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .status{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; color:var(--text2);
+    background:var(--card); border:1px solid var(--line);
+    padding:4px 12px; border-radius:999px; box-shadow:var(--shadow);
+  }
+  .dot{width:8px; height:8px; border-radius:50%; background:#c8c8c8; transition:background .3s;}
+  .dot.ok{background:#4caf7d;} .dot.err{background:#e2695c;} .dot.busy{background:#e8b04c; animation:blink 1s infinite;}
+  @keyframes blink{50%{opacity:.35}}
+
+  /* ---------- 洋葱模式按钮 ---------- */
+  .tor-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:600; letter-spacing:.05em;
+    color:var(--text2); background:var(--card);
+    border:1px solid var(--line); padding:5px 14px; border-radius:999px;
+    cursor:pointer; box-shadow:var(--shadow); font-family:inherit;
+    transition:all .25s;
+  }
+  .tor-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .tor-btn.on{
+    color:#fff; background:linear-gradient(135deg,#6b4a8f,#9a6fd0);
+    border-color:transparent; box-shadow:0 4px 16px rgba(140,100,210,.4);
+  }
+  .tor-banner{
+    margin-top:18px; text-align:left;
+    background:var(--card); border:1px solid rgba(154,111,208,.45);
+    border-radius:14px; padding:13px 16px;
+    font-size:12.5px; color:var(--text2); line-height:1.9;
+  }
+  .tor-banner b{color:var(--text);}
+  .tor-banner a{color:var(--accent);}
+  .tor-banner .warn{color:#d5a06a;}
+
+  /* ---------- 发布区 ---------- */
+  .poster{
+    margin-top:26px; background:var(--card); border:1px solid var(--line);
+    border-radius:18px; padding:18px; box-shadow:var(--shadow);
+    transition:background .4s;
+  }
+  .nick-wrap{flex:1; min-width:0;}
+  label{font-size:12px; color:var(--text2); display:block; margin-bottom:6px;}
+  input[type=text], textarea{
+    width:100%; border:1.5px solid var(--line); border-radius:12px;
+    background:var(--card2); color:var(--text);
+    padding:11px 14px; font-size:15px; font-family:inherit;
+    outline:none; transition:border-color .2s, box-shadow .2s; resize:none;
+  }
+  input[type=text]:focus, textarea:focus{
+    border-color:var(--accent); box-shadow:0 0 0 3px var(--soft);
+  }
+  textarea{min-height:96px; line-height:1.6;}
+  .hint-row{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;}
+  .privacy-note{font-size:12px; color:var(--accent); opacity:.9;}
+  .counter{font-size:12px; color:var(--text2);}
+  .counter.warn{color:#e2695c;}
+  .send-btn{
+    margin-top:12px; width:100%; border:none; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff; font-size:16px; font-weight:600; letter-spacing:.2em;
+    padding:13px; border-radius:14px;
+    box-shadow:var(--shadow); transition:transform .15s, box-shadow .2s, opacity .2s;
+  }
+  .send-btn:hover{transform:translateY(-1px); box-shadow:var(--shadow-lg);}
+  .send-btn:active{transform:translateY(1px);}
+  .send-btn:disabled{opacity:.55; cursor:not-allowed; transform:none;}
+
+  /* ---------- 列表 ---------- */
+  .toolbar{
+    display:flex; justify-content:space-between; align-items:center;
+    margin:28px 2px 12px; color:var(--text2); font-size:13px;
+  }
+  .refresh-btn{
+    border:1px solid var(--line); background:var(--card); color:var(--text2);
+    padding:6px 14px; border-radius:999px; font-size:13px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; transition:all .2s; font-family:inherit;
+  }
+  .refresh-btn:hover{color:var(--accent); border-color:var(--accent);}
+  .refresh-btn.spin .ic{animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .ic{display:inline-block; line-height:1;}
+
+  #list{list-style:none;}
+  .msg{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow);
+    animation:rise .35s ease both; word-break:break-word;
+  }
+  @keyframes rise{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+  .msg-head{display:flex; align-items:center; gap:10px;}
+  .avatar{
+    width:38px; height:38px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+    background:var(--soft); border:1px solid var(--line);
+  }
+  .msg-meta{flex:1; min-width:0;}
+  .msg-name{font-weight:600; font-size:14.5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .floor{
+    font-size:11px; font-weight:500; color:var(--accent);
+    background:var(--soft); border-radius:999px; padding:1px 9px; letter-spacing:.04em;
+  }
+  .msg-time{font-size:12px; color:var(--text2);}
+  .msg-text{margin-top:9px; font-size:15px; white-space:pre-wrap;}
+  .msg-text a{color:var(--accent); text-decoration:underline; text-underline-offset:3px;}
+
+  .empty{
+    text-align:center; padding:56px 20px; color:var(--text2);
+    background:var(--card); border:1.5px dashed var(--line); border-radius:18px;
+  }
+  .empty .big{font-size:40px; display:block; margin-bottom:12px;}
+  .empty p{font-size:14px;}
+
+  footer{
+    margin-top:36px; text-align:center; color:var(--text2); font-size:12px; line-height:2;
+  }
+  footer a{color:var(--accent);}
+
+  .toast{
+    position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px);
+    background:var(--text); color:var(--bg1); font-size:14px;
+    padding:10px 20px; border-radius:999px; opacity:0; pointer-events:none;
+    transition:all .3s; max-width:86vw; text-align:center; z-index:99;
+    box-shadow:var(--shadow-lg);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🌳</div>
+    <h1>匿名树洞</h1>
+    <p class="subtitle">想说点什么？这里没人知道你是谁</p>
+    <div class="status-row">
+      <div class="status"><span class="dot" id="dot"></span><span id="statusText">正在连接云端…</span></div>
+      <button class="tor-btn" id="torBtn" aria-pressed="false">🧅 洋葱模式</button>
+    </div>
+    <div class="tor-banner" id="torBanner" hidden></div>
+  </header>
+
+  <div class="poster">
+    <label for="nick">昵称（可留空，自动分配匿名昵称）</label>
+    <input type="text" id="nick" maxlength="16" placeholder="匿名" autocomplete="off">
+    <label for="text" style="margin-top:12px;">把想说的话扔进树洞里…</label>
+    <textarea id="text" maxlength="500" placeholder="支持换行，链接会自动识别。文明发言，友善交流～"></textarea>
+    <div class="hint-row">
+      <span class="privacy-note">🔒 不采集 IP · 位置 · 设备指纹</span>
+      <span class="counter" id="counter">0 / 500</span>
+    </div>
+    <button class="send-btn" id="sendBtn">投 入 树 洞</button>
+  </div>
+
+  <div class="toolbar">
+    <span id="countText">— 条留言</span>
+    <button class="refresh-btn" id="refreshBtn"><span class="ic">⟳</span> 刷新</button>
+  </div>
+
+  <ul id="list"></ul>
+  <div class="empty" id="emptyBox" hidden>
+    <span class="big">🍃</span>
+    <p>树洞还是空的，来当第一个说话的人吧</p>
+  </div>
+
+  <footer>
+    留言实时同步，所有人可见 · 请友善发言，勿发隐私信息<br>
+    本站不记录 IP 与设备信息 · 数据存于免费云端服务，每小时请求有上限
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== 配置 ===== */
+  const BIN_URL = 'https://extendsclass.com/api/json-storage/bin/fcadedf';
+  const ONION_URL = '';   // 若你按《ONION部署指南.md》部署了 .onion 站点，把地址填这里，洋葱模式下会显示
+  const MAX_MSGS = 500;           // 最多保留留言数，超出裁掉最旧的
+  const POLL_MS  = 60000;         // 自动刷新间隔
+  const MIN_GAP  = 10000;         // 同一浏览器两次发帖最小间隔
+
+  /* ===== 匿名身份池 ===== */
+  const NICK_POOL = ['路过的风','夜航星','街角信箱','月亮邮差','深海灯塔','山间回响','云端漫步','打盹的狐狸','沉默的旅人','匿名树懒','半糖去冰','南巷旧人','雾里看花','薄荷糖','候鸟','北极星','晚风轻语','旧梦难寻','柠檬气泡','夏日蝉鸣'];
+  const AVATARS   = ['🦊','🐻','🐱','🐰','🦉','🐧','🐨','🦝','🐿️','🦔','🐳','🦋','🐌','🦄','🐢','🦩'];
+
+  const $ = id => document.getElementById(id);
+  const listEl = $('list'), emptyEl = $('emptyBox'), countEl = $('countText');
+  const dotEl = $('dot'), statusEl = $('statusText'), toastEl = $('toast');
+
+  let messages = [];          // 按时间正序
+  let lastPostAt = 0;
+  let lastText = '';
+  let toastTimer = null;
+  let torMode = false;        // 洋葱模式：仅当前会话有效，不持久化（无痕）
+
+  /* ===== 工具 ===== */
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  function rand(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+  function genId(){
+    try { return crypto.randomUUID ? crypto.randomUUID() : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2,10)); }
+    catch(e){ return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2,10); }
+  }
+  function hashStr(s){
+    let h = 0;
+    for (let i = 0; i < s.length; i++){ h = (h * 31 + s.charCodeAt(i)) >>> 0; }
+    return h;
+  }
+  /* 洋葱模式：时间戳模糊到整点，降低时间关联分析风险 */
+  function roundToHour(t){
+    const d = new Date(t);
+    d.setMinutes(0, 0, 0);
+    return d.getTime();
+  }
+  function fmtTime(ts){
+    const d = new Date(ts), now = Date.now();
+    const diff = now - ts, min = 60000, hour = 3600000, day = 86400000;
+    if (diff < min) return '刚刚';
+    if (diff < hour) return Math.floor(diff / min) + ' 分钟前';
+    if (diff < day) return Math.floor(diff / hour) + ' 小时前';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const thatDay = new Date(d); thatDay.setHours(0,0,0,0);
+    if (today - thatDay <= day) return '昨天 ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    if (d.getFullYear() === new Date().getFullYear()) return (d.getMonth()+1) + '月' + d.getDate() + '日';
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function trimPunct(u){
+    return u.replace(/[.,;:!?，。；：！？、…]+$/, '');
+  }
+
+  /* ===== API ===== */
+  async function apiGet(){
+    const r = await fetch(BIN_URL + '?_=' + Date.now(), { cache: 'no-store' });
+    if (r.status === 429) throw new Error('请求太频繁（云端免费额度），稍等片刻再试');
+    if (!r.ok) throw new Error('网络错误（HTTP ' + r.status + '）');
+    return await r.json();
+  }
+  async function apiPut(data){
+    const r = await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (r.status === 429) throw new Error('请求太频繁（云端免费额度），稍等片刻再试');
+    if (!r.ok) throw new Error('网络错误（HTTP ' + r.status + '）');
+  }
+
+  /* ===== 状态提示 ===== */
+  function setStatus(mode, text){
+    dotEl.className = 'dot ' + mode;
+    statusEl.textContent = text;
+  }
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+  }
+
+  /* ===== 洋葱模式 ===== */
+  function setTor(on){
+    torMode = on;
+    document.body.classList.toggle('tor', on);
+    const btn = $('torBtn');
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (on){
+      /* 无痕：清除并停止一切本地存储 */
+      try { localStorage.removeItem('treehole_nick'); } catch(e){}
+      $('nick').value = '';
+    }
+    updateTorBanner();
+    toast(on ? '🧅 洋葱模式已开启：本会话不留任何本地痕迹' : '🧅 已切回普通模式');
+  }
+  function updateTorBanner(){
+    const b = $('torBanner');
+    if (!torMode){ b.hidden = true; b.textContent = ''; return; }
+    b.textContent = '';
+    const line1 = document.createElement('div');
+    const strong = document.createElement('b');
+    strong.textContent = '🧅 洋葱模式已开启';
+    line1.appendChild(strong);
+    line1.appendChild(document.createTextNode(' —— 本会话不写入任何本地存储（昵称不会被记住，关闭即无痕）；留言时间戳自动模糊到整点；发送的数据仅含「昵称 · 内容 · 时间 · 随机ID」，不采集 IP、位置或设备指纹。'));
+    b.appendChild(line1);
+    const line2 = document.createElement('div');
+    const warn = document.createElement('span');
+    warn.className = 'warn';
+    warn.textContent = '⚠️ 网页开关无法改变你的网络出口';
+    line2.appendChild(warn);
+    line2.appendChild(document.createTextNode('：真正的匿名上网请使用 '));
+    const a = document.createElement('a');
+    a.href = 'https://www.torproject.org/download/';
+    a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = 'Tor Browser';
+    line2.appendChild(a);
+    line2.appendChild(document.createTextNode(' 打开本站。'));
+    b.appendChild(line2);
+    if (ONION_URL){
+      const line3 = document.createElement('div');
+      line3.appendChild(document.createTextNode('🕸️ 本站洋葱地址：'));
+      const oa = document.createElement('a');
+      oa.href = ONION_URL; oa.target = '_blank'; oa.rel = 'noopener noreferrer';
+      oa.textContent = ONION_URL;
+      line3.appendChild(oa);
+      b.appendChild(line3);
+    }
+    b.hidden = false;
+  }
+
+  /* ===== 渲染 ===== */
+  function render(){
+    const msgs = messages;
+    countEl.textContent = msgs.length + ' 条留言';
+    emptyEl.hidden = msgs.length > 0;
+    listEl.textContent = '';
+
+    const frag = document.createDocumentFragment();
+    for (let i = msgs.length - 1; i >= 0; i--){
+      const m = msgs[i];
+      const li = document.createElement('li');
+      li.className = 'msg';
+
+      const head = document.createElement('div');
+      head.className = 'msg-head';
+
+      const av = document.createElement('span');
+      av.className = 'avatar';
+      av.textContent = AVATARS[hashStr(m.id) % AVATARS.length];
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      const name = document.createElement('div');
+      name.className = 'msg-name';
+      const nameTxt = document.createElement('span');
+      nameTxt.textContent = m.nick || '匿名';
+      const floor = document.createElement('span');
+      floor.className = 'floor';
+      floor.textContent = '#' + (i + 1);
+      name.appendChild(nameTxt); name.appendChild(floor);
+      const time = document.createElement('div');
+      time.className = 'msg-time';
+      time.textContent = fmtTime(m.ts);
+      meta.appendChild(name); meta.appendChild(time);
+
+      head.appendChild(av); head.appendChild(meta);
+      li.appendChild(head);
+
+      const body = document.createElement('div');
+      body.className = 'msg-text';
+      appendContent(body, String(m.text || ''));
+      li.appendChild(body);
+
+      frag.appendChild(li);
+    }
+    listEl.appendChild(frag);
+  }
+
+  /* 内容渲染：纯文本 + 安全的 http(s) 链接识别（防 XSS） */
+  function appendContent(el, text){
+    const parts = text.split(/(https?:\/\/[^\s<>]+)/);
+    parts.forEach((p, i) => {
+      if (i % 2 === 1){
+        const url = trimPunct(p);
+        const a = document.createElement('a');
+        a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.textContent = url;
+        el.appendChild(a);
+        const rest = p.slice(url.length);
+        if (rest) el.appendChild(document.createTextNode(rest));
+      } else if (p){
+        el.appendChild(document.createTextNode(p));
+      }
+    });
+  }
+
+  /* ===== 数据加载 ===== */
+  let loadSeq = 0;
+  async function load(showBusy){
+    if (showBusy) setStatus('busy', '同步中…');
+    const seq = ++loadSeq;
+    try {
+      const data = await apiGet();
+      if (seq !== loadSeq) return;
+      messages = Array.isArray(data.messages) ? data.messages : [];
+      render();
+      setStatus('ok', '云端已连接 · ' + messages.length + ' 条留言');
+    } catch(e){
+      if (seq !== loadSeq) return;
+      setStatus('err', '连接失败，点击"刷新"重试');
+      if (showBusy) toast(e.message || '网络异常，请稍后重试');
+    }
+  }
+
+  /* ===== 发布 ===== */
+  async function publish(){
+    const textEl = $('text'), nickEl = $('nick');
+    const text = textEl.value.trim();
+    const nick = nickEl.value.trim().slice(0, 16);
+
+    if (!text){
+      toast('先写点什么吧～');
+      textEl.focus();
+      return;
+    }
+    const now = Date.now();
+    if (now - lastPostAt < MIN_GAP){
+      toast('发得太快啦，休息几秒再投～');
+      return;
+    }
+    if (text === lastText){
+      toast('这条和上一条一模一样哦');
+      return;
+    }
+
+    const btn = $('sendBtn');
+    btn.disabled = true;
+    btn.textContent = '投 入 中…';
+    setStatus('busy', '正在投递…');
+
+    try {
+      const data = await apiGet();                       // 读最新，避免覆盖别人的留言
+      const msgs = Array.isArray(data.messages) ? data.messages : [];
+      const msg = {
+        id: genId(),
+        nick: nick || rand(NICK_POOL),
+        text: text,
+        ts: torMode ? roundToHour(Date.now()) : Date.now()   // 洋葱模式：时间模糊到整点
+      };
+      const merged = msgs.concat([msg]).slice(-MAX_MSGS);
+      const payload = { messages: merged };
+      if (data.meta) payload.meta = data.meta;
+
+      await apiPut(payload);
+
+      messages = merged;
+      lastPostAt = Date.now();
+      lastText = text;
+      render();
+      setStatus('ok', '云端已连接 · ' + messages.length + ' 条留言');
+      textEl.value = '';
+      $('counter').textContent = '0 / 500';
+      toast('已投入树洞 🌳');
+    } catch(e){
+      setStatus('err', '发送失败，点击"刷新"重试');
+      toast(e.message || '发送失败，请稍后重试');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '投 入 树 洞';
+    }
+  }
+
+  /* ===== 事件绑定 ===== */
+  $('sendBtn').addEventListener('click', publish);
+  $('torBtn').addEventListener('click', () => setTor(!torMode));
+  $('text').addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') publish();
+  });
+  $('text').addEventListener('input', e => {
+    const len = e.target.value.length;
+    const c = $('counter');
+    c.textContent = len + ' / 500';
+    c.className = 'counter' + (len >= 480 ? ' warn' : '');
+  });
+  $('refreshBtn').addEventListener('click', () => {
+    $('refreshBtn').classList.add('spin');
+    load(true).finally(() => setTimeout(() => $('refreshBtn').classList.remove('spin'), 600));
+  });
+
+  /* 回车提交（昵称输入框内回车跳到留言框） */
+  $('nick').addEventListener('keydown', e => {
+    if (e.key === 'Enter'){ e.preventDefault(); $('text').focus(); }
+  });
+  /* 记住昵称（洋葱模式下不保存） */
+  $('nick').addEventListener('change', () => {
+    if (torMode) return;
+    try { localStorage.setItem('treehole_nick', $('nick').value.trim()); } catch(e){}
+  });
+
+  /* ===== 自动刷新（页面可见时才轮询） ===== */
+  let timer = null;
+  function startPoll(){ if (!timer) timer = setInterval(() => load(false), POLL_MS); }
+  function stopPoll(){ clearInterval(timer); timer = null; }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden){ stopPoll(); }
+    else { load(false); startPoll(); }
+  });
+  window.addEventListener('focus', () => { if (!document.hidden) load(false); });
+
+  /* ===== 启动 ===== */
+  let savedNick = '';
+  try { savedNick = localStorage.getItem('treehole_nick') || ''; } catch(e){}
+  if (savedNick) $('nick').value = savedNick;
+
+  load(true);
+  startPoll();
+})();
+</script>
+</body>
+</html>
